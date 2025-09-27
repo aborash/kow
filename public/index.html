@@ -56,7 +56,12 @@
         }
 
         // Appel à ton API locale pour récupérer l'adresse
-        fetch('http://localhost:3000/scrape?url=https://www.tabletoptournaments.net/fr/t3_tournament.php?tid=37854')
+		//
+		
+
+        //fetch('http://localhost:3000/scrape?url=https://www.tabletoptournaments.net/fr/t3_tournament.php?tid=37854')
+		// Dans ton fichier index.html, remplace :
+		fetch('/scrape?url=https://www.tabletoptournaments.net/fr/t3_tournament.php?tid=37854')
             .then(response => response.json())
             .then(data => {
                 if (data.adresse) {

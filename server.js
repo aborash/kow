@@ -2,10 +2,15 @@ const express = require('express');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 
+// Servir les fichiers statiques (HTML, CSS, JS)
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Route pour le scraping
 app.get('/scrape', async (req, res) => {
     try {
         const url = req.query.url;
@@ -26,7 +31,13 @@ app.get('/scrape', async (req, res) => {
     }
 });
 
-const PORT = 3000;
+// Route pour servir ton fichier HTML principal
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+// Utilise le port fourni par Render ou 3000 en local
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Serveur démarré sur http://localhost:${PORT}`);
+    console.log(`Serveur démarré sur le port ${PORT}`);
 });
