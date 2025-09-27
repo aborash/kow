@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte avec adresse de tournoi</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+   <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        #map {
+            height: 80vh;
+            width: 80vw;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <h1>Carte du tournoi</h1>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Initialisation de la carte
+        const map = L.map('map').setView([46.603354, 1.888334], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Fonction pour ajouter une adresse sur la carte
+        function addAdresse(adresse) {
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(adresse)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        L.marker([lat, lon]).addTo(map)
+                            .bindPopup(adresse)
+                    } else {
+                        console.error("Adresse non trouvée :", adresse);
+                    }
+                })
+                .catch(error => {
+                    console.error("Erreur lors du géocodage :", error);
+                });
+        }
+
+        // Appel à ton API locale pour récupérer l'adresse
+        fetch('http://localhost:3000/scrape?url=https://www.tabletoptournaments.net/fr/t3_tournament.php?tid=37854')
+            .then(response => response.json())
+            .then(data => {
+                if (data.adresse) {
+                    addAdresse(data.adresse);
+                } else {
+                    console.error("Impossible de récupérer l'adresse.");
+                }
+            })
+            .catch(error => {
+                console.error("Erreur lors de l'appel à l'API :", error);
+            });
+    </script>
+</body>
+</html>
